@@ -6,6 +6,11 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import * as z from 'zod';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../../lib/context/AuthContext';
+import { motion, AnimatePresence } from 'framer-motion';
+import { fadeIn, slideIn, containerVariants } from '../../lib/animations';
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Card } from "@/components/ui/card";
 
 const authSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -44,108 +49,183 @@ export default function Auth() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <div className="container mx-auto px-4 py-8 md:py-16">
-        <div className="max-w-md mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center">
+    <motion.div 
+      className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900 relative overflow-hidden"
+      initial="initial"
+      animate="animate"
+      exit="exit"
+      variants={containerVariants}
+    >
+      {/* Subtle background elements */}
+      <div className="absolute inset-0 overflow-hidden">
+        <motion.div 
+          className="absolute w-[800px] h-[800px] -top-[400px] -left-[400px] bg-gradient-to-br from-slate-200/50 to-slate-300/50 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3] 
+          }}
+          transition={{ 
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut" 
+          }}
+        />
+        <motion.div 
+          className="absolute w-[600px] h-[600px] -bottom-[300px] -right-[300px] bg-gradient-to-tr from-slate-200/50 to-slate-300/50 rounded-full blur-3xl"
+          animate={{ 
+            scale: [1, 1.1, 1],
+            opacity: [0.3, 0.4, 0.3] 
+          }}
+          transition={{ 
+            duration: 8,
+            repeat: Infinity,
+            ease: "easeInOut",
+            delay: 4 
+          }}
+        />
+      </div>
+
+      <div className="container mx-auto px-4 py-16 md:py-24">
+        <motion.div 
+          className="max-w-md mx-auto"
+          variants={fadeIn}
+        >
+          <motion.h1 
+            className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center tracking-tight text-slate-900"
+            variants={slideIn}
+          >
             {isLogin ? 'Welcome Back!' : 'Create Account'}
-          </h1>
+          </motion.h1>
 
-          {error && (
-            <div className="bg-red-800 text-white p-3 md:p-4 rounded-lg mb-4 md:mb-6 text-sm md:text-base">
-              {error}
-            </div>
-          )}
-
-          <div className="bg-gray-800 p-4 md:p-8 rounded-lg shadow-lg">
-            <div className="flex gap-2 md:gap-4 mb-6 md:mb-8">
-              <button
-                onClick={() => setIsLogin(true)}
-                className={`flex-1 py-3 rounded-lg transition-colors text-base md:text-lg ${
-                  isLogin
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
+          <AnimatePresence mode="wait">
+            {error && (
+              <motion.div 
+                className="bg-red-50 text-red-600 p-3 md:p-4 rounded-lg mb-4 md:mb-6 text-sm md:text-base border border-red-200"
+                initial={{ opacity: 0, y: -20 }}
+                animate={{ opacity: 1, y: 0 }}
+                exit={{ opacity: 0, y: -20 }}
               >
-                Login
-              </button>
-              <button
-                onClick={() => setIsLogin(false)}
-                className={`flex-1 py-3 rounded-lg transition-colors text-base md:text-lg ${
-                  !isLogin
-                    ? 'bg-blue-600 text-white'
-                    : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
-                }`}
-              >
-                Sign Up
-              </button>
-            </div>
+                {error}
+              </motion.div>
+            )}
+          </AnimatePresence>
 
-            <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
-              {!isLogin && (
+          <Card className="bg-white/80 backdrop-blur-lg border-slate-200">
+            <motion.div className="p-6 md:p-8" variants={fadeIn}>
+              <div className="flex gap-2 md:gap-4 mb-6 md:mb-8">
+                <Button
+                  onClick={() => setIsLogin(true)}
+                  variant={isLogin ? "default" : "outline"}
+                  className={`flex-1 ${isLogin ? 'bg-slate-900 hover:bg-slate-800' : 'text-slate-700 hover:text-slate-900'}`}
+                >
+                  Login
+                </Button>
+                <Button
+                  onClick={() => setIsLogin(false)}
+                  variant={!isLogin ? "default" : "outline"}
+                  className={`flex-1 ${!isLogin ? 'bg-slate-900 hover:bg-slate-800' : 'text-slate-700 hover:text-slate-900'}`}
+                >
+                  Sign Up
+                </Button>
+              </div>
+
+              <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 md:space-y-6">
+                <AnimatePresence mode="wait">
+                  {!isLogin && (
+                    <motion.div
+                      initial={{ opacity: 0, height: 0 }}
+                      animate={{ opacity: 1, height: "auto" }}
+                      exit={{ opacity: 0, height: 0 }}
+                      transition={{ duration: 0.2 }}
+                    >
+                      <div className="mb-4">
+                        <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2 text-slate-700">Username</label>
+                        <Input
+                          {...register('username')}
+                          type="text"
+                          className="bg-white border-slate-200 focus:border-slate-400 focus:ring-slate-400 text-slate-900"
+                          placeholder="Choose a username"
+                          disabled={loading}
+                        />
+                        {errors.username && (
+                          <motion.p 
+                            className="text-red-600 text-xs md:text-sm mt-1"
+                            initial={{ opacity: 0 }}
+                            animate={{ opacity: 1 }}
+                          >
+                            {errors.username.message}
+                          </motion.p>
+                        )}
+                      </div>
+                    </motion.div>
+                  )}
+                </AnimatePresence>
+
                 <div>
-                  <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2">Username</label>
-                  <input
-                    {...register('username')}
-                    type="text"
-                    className="w-full p-3 md:p-3.5 text-base md:text-lg rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                    placeholder="Choose a username"
+                  <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2 text-slate-700">Email</label>
+                  <Input
+                    {...register('email')}
+                    type="email"
+                    className="bg-white border-slate-200 focus:border-slate-400 focus:ring-slate-400 text-slate-900"
+                    placeholder="Enter your email"
                     disabled={loading}
                   />
-                  {errors.username && (
-                    <p className="text-red-500 text-xs md:text-sm mt-1">{errors.username.message}</p>
+                  {errors.email && (
+                    <motion.p 
+                      className="text-red-600 text-xs md:text-sm mt-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {errors.email.message}
+                    </motion.p>
                   )}
                 </div>
+
+                <div>
+                  <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2 text-slate-700">Password</label>
+                  <Input
+                    {...register('password')}
+                    type="password"
+                    className="bg-white border-slate-200 focus:border-slate-400 focus:ring-slate-400 text-slate-900"
+                    placeholder="Enter your password"
+                    disabled={loading}
+                  />
+                  {errors.password && (
+                    <motion.p 
+                      className="text-red-600 text-xs md:text-sm mt-1"
+                      initial={{ opacity: 0 }}
+                      animate={{ opacity: 1 }}
+                    >
+                      {errors.password.message}
+                    </motion.p>
+                  )}
+                </div>
+
+                <Button
+                  type="submit"
+                  disabled={loading}
+                  className="w-full bg-slate-900 hover:bg-slate-800"
+                  variant="default"
+                >
+                  {loading
+                    ? isLogin ? 'Logging in...' : 'Signing up...'
+                    : isLogin ? 'Login' : 'Sign Up'
+                  }
+                </Button>
+              </form>
+
+              {!isLogin && (
+                <motion.p 
+                  className="mt-4 text-xs md:text-sm text-slate-600 text-center px-2 md:px-4"
+                  variants={fadeIn}
+                >
+                  By signing up, you agree to participate in the TechMate Hunt and follow its rules.
+                </motion.p>
               )}
-
-              <div>
-                <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2">Email</label>
-                <input
-                  {...register('email')}
-                  type="email"
-                  className="w-full p-3 md:p-3.5 text-base md:text-lg rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your email"
-                  disabled={loading}
-                />
-                {errors.email && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1">{errors.email.message}</p>
-                )}
-              </div>
-
-              <div>
-                <label className="block text-sm md:text-base font-medium mb-1.5 md:mb-2">Password</label>
-                <input
-                  {...register('password')}
-                  type="password"
-                  className="w-full p-3 md:p-3.5 text-base md:text-lg rounded bg-gray-700 border border-gray-600 focus:ring-2 focus:ring-blue-500"
-                  placeholder="Enter your password"
-                  disabled={loading}
-                />
-                {errors.password && (
-                  <p className="text-red-500 text-xs md:text-sm mt-1">{errors.password.message}</p>
-                )}
-              </div>
-
-              <button
-                type="submit"
-                disabled={loading}
-                className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3.5 md:py-4 px-4 rounded text-base md:text-lg transition duration-200 disabled:opacity-50 mt-2 md:mt-4"
-              >
-                {loading
-                  ? isLogin ? 'Logging in...' : 'Signing up...'
-                  : isLogin ? 'Login' : 'Sign Up'
-                }
-              </button>
-            </form>
-
-            {!isLogin && (
-              <p className="mt-4 text-xs md:text-sm text-gray-400 text-center px-2 md:px-4">
-                By signing up, you agree to participate in the TechMate Hunt and follow its rules.
-              </p>
-            )}
-          </div>
-        </div>
+            </motion.div>
+          </Card>
+        </motion.div>
       </div>
-    </div>
+    </motion.div>
   );
 } 

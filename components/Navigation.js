@@ -3,7 +3,7 @@
 import Link from 'next/link';
 import { useAuth } from '../lib/context/AuthContext';
 import { useState } from 'react';
-import { Menu, X } from 'lucide-react';
+import { Menu, X, Code2 } from 'lucide-react';
 
 export function Navigation() {
   const { user, logout } = useAuth();
@@ -19,38 +19,49 @@ export function Navigation() {
   };
 
   return (
-    <nav className="bg-gray-900 text-white p-4 relative z-50">
+    <nav className="bg-gradient-to-r from-amber-500 to-yellow-400 text-white shadow-lg relative z-50">
       <div className="container mx-auto">
-        <div className="flex justify-between items-center">
-          <Link href="/" className="text-xl font-bold">
-            TechMate Hunt
+        <div className="flex justify-between items-center h-16 px-4">
+          <Link 
+            href="/" 
+            className="flex items-center space-x-2 text-2xl font-semibold hover:opacity-90 transition-opacity"
+          >
+            <Code2 size={24} className="text-white" />
+            <span>TechMate</span>
           </Link>
 
           {/* Mobile menu button */}
           <button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 hover:bg-gray-800 rounded"
+            className="md:hidden p-2 hover:bg-amber-400/20 rounded-full transition-colors"
+            aria-label="Toggle menu"
           >
             {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
           </button>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex space-x-4">
+          <div className="hidden md:flex items-center space-x-1">
             {user ? (
               <>
-                <Link href="/dashboard" className="hover:text-blue-400 transition-colors">
+                <Link 
+                  href="/dashboard" 
+                  className="px-4 py-2 rounded-full hover:bg-amber-400/20 transition-colors font-medium text-lg"
+                >
                   Dashboard
                 </Link>
                 <button
                   onClick={handleLogout}
-                  className="hover:text-red-400 transition-colors"
+                  className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors font-medium text-lg"
                 >
                   Logout
                 </button>
               </>
             ) : (
-              <Link href="/auth" className="hover:text-blue-400 transition-colors">
-                Login / Register
+              <Link 
+                href="/auth" 
+                className="px-6 py-2 rounded-full bg-white text-amber-500 hover:bg-white/90 transition-colors font-semibold text-lg"
+              >
+                Get Started
               </Link>
             )}
           </div>
@@ -58,20 +69,20 @@ export function Navigation() {
 
         {/* Mobile menu */}
         {isMenuOpen && (
-          <div className="md:hidden absolute left-0 right-0 top-full bg-gray-900 border-t border-gray-800 p-4 shadow-lg">
-            <div className="flex flex-col space-y-3">
+          <div className="md:hidden absolute left-0 right-0 top-full bg-gradient-to-r from-amber-500 to-yellow-400 border-t border-white/10 shadow-lg">
+            <div className="flex flex-col p-4 space-y-2">
               {user ? (
                 <>
                   <Link 
                     href="/dashboard" 
-                    className="hover:text-blue-400 transition-colors py-2"
+                    className="px-4 py-3 rounded-full hover:bg-amber-400/20 transition-colors font-medium text-lg"
                     onClick={() => setIsMenuOpen(false)}
                   >
                     Dashboard
                   </Link>
                   <button
                     onClick={handleLogout}
-                    className="hover:text-red-400 transition-colors text-left py-2"
+                    className="px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-left font-medium text-lg"
                   >
                     Logout
                   </button>
@@ -79,10 +90,10 @@ export function Navigation() {
               ) : (
                 <Link 
                   href="/auth" 
-                  className="hover:text-blue-400 transition-colors py-2"
+                  className="px-4 py-3 rounded-full bg-white text-amber-500 hover:bg-white/90 transition-colors font-semibold text-lg text-center"
                   onClick={() => setIsMenuOpen(false)}
                 >
-                  Login / Register
+                  Get Started
                 </Link>
               )}
             </div>
