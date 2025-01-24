@@ -11,6 +11,7 @@ import { fadeIn, slideIn, containerVariants } from '../../lib/animations';
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Card } from "@/components/ui/card";
+import { Loader } from '../../components/Loader';
 
 const authSchema = z.object({
   email: z.string().email('Invalid email address'),
@@ -49,13 +50,7 @@ export default function Auth() {
   };
 
   return (
-    <motion.div 
-      className="min-h-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900 relative overflow-hidden"
-      initial="initial"
-      animate="animate"
-      exit="exit"
-      variants={containerVariants}
-    >
+    <div className="min-h-screen w-screen bg-gradient-to-b from-slate-50 to-slate-100 text-slate-900 relative overflow-hidden">
       {/* Subtle background elements */}
       <div className="absolute inset-0 overflow-hidden">
         <motion.div 
@@ -85,7 +80,7 @@ export default function Auth() {
         />
       </div>
 
-      <div className="container mx-auto px-4 py-16 md:py-24">
+      <div className="container mx-auto px-4 py-16 my-20 md:py-24">
         <motion.div 
           className="max-w-md mx-auto"
           variants={fadeIn}
@@ -204,13 +199,17 @@ export default function Auth() {
                 <Button
                   type="submit"
                   disabled={loading}
-                  className="w-full bg-slate-900 hover:bg-slate-800"
+                  className="w-full bg-[#ffc629] hover:bg-[#ffd666] text-black"
                   variant="default"
                 >
-                  {loading
-                    ? isLogin ? 'Logging in...' : 'Signing up...'
-                    : isLogin ? 'Login' : 'Sign Up'
-                  }
+                  {loading ? (
+                    <div className="flex items-center justify-center gap-2">
+                      <Loader size={20} color="black" />
+                      <span>{isLogin ? 'Logging in...' : 'Signing up...'}</span>
+                    </div>
+                  ) : (
+                    isLogin ? 'Login' : 'Sign Up'
+                  )}
                 </Button>
               </form>
 
@@ -226,6 +225,6 @@ export default function Auth() {
           </Card>
         </motion.div>
       </div>
-    </motion.div>
+    </div>
   );
-} 
+}

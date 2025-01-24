@@ -3,9 +3,15 @@
 import { motion } from 'framer-motion';
 import { fadeIn, staggerContainer } from '../lib/animations';
 import { Code2, Users, Rocket, ChevronRight } from 'lucide-react';
-import Link from 'next/link';
+import { useRouter } from 'next/navigation';
 
 export default function Home() {
+  const router = useRouter();
+
+  const handleNavigation = (path) => {
+    router.push(path);
+  };
+
   return (
     <motion.div 
       className="min-h-screen bg-white text-black relative overflow-hidden"
@@ -15,8 +21,8 @@ export default function Home() {
       exit="exit"
     >
       {/* Hero Section */}
-      <div className="relative">
-        <div className="container mx-auto px-4 pt-20 pb-32">
+      <div className="relative h-screen flex items-center">
+        <div className="container mx-auto px-4">
           <motion.div 
             className="max-w-4xl mx-auto text-center"
             variants={fadeIn}
@@ -37,15 +43,14 @@ export default function Home() {
             >
               Connect with brilliant minds in tech
             </motion.p>
-            <Link href="/auth">
-              <motion.button
-                className="btn-primary text-xl md:text-2xl px-12 py-4 rounded-full shadow-lg"
-                whileHover={{ scale: 1.05 }}
-                whileTap={{ scale: 0.95 }}
-              >
-                Start Matching
-              </motion.button>
-            </Link>
+            <motion.button
+              onClick={() => handleNavigation('/auth')}
+              className="btn-primary text-xl md:text-2xl px-12 py-4 rounded-full shadow-lg"
+              whileHover={{ scale: 1.05 }}
+              whileTap={{ scale: 0.95 }}
+            >
+              Start Matching
+            </motion.button>
           </motion.div>
         </div>
 
@@ -69,7 +74,7 @@ export default function Home() {
       </div>
 
       {/* Features Section */}
-      <div className="bg-[#fff8e6] py-24">
+      <div className="min-h-screen bg-[#fff8e6] py-24 flex items-center">
         <div className="container mx-auto px-4">
           <motion.h2 
             className="text-4xl md:text-5xl text-center mb-16 text-black"
@@ -113,7 +118,7 @@ export default function Home() {
       </div>
 
       {/* CTA Section */}
-      <div className="bg-[#ffc629] py-20">
+      <div className="min-h-screen bg-[#ffc629] flex items-center">
         <div className="container mx-auto px-4 text-center">
           <motion.h2 
             className="text-4xl md:text-5xl mb-8 text-black"
@@ -121,16 +126,15 @@ export default function Home() {
           >
             READY TO MEET YOUR MATCH?
           </motion.h2>
-          <Link href="/auth">
-            <motion.button
-              className="bg-black text-white text-xl px-12 py-4 rounded-full shadow-lg"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-            >
-              Get Started Now
-              <ChevronRight className="inline-block ml-2" />
-            </motion.button>
-          </Link>
+          <motion.button
+            onClick={() => handleNavigation('/auth')}
+            className="bg-black text-white text-xl px-12 py-4 rounded-full shadow-lg"
+            whileHover={{ scale: 1.05 }}
+            whileTap={{ scale: 0.95 }}
+          >
+            Get Started Now
+            <ChevronRight className="inline-block ml-2" />
+          </motion.button>
         </div>
       </div>
     </motion.div>

@@ -3,6 +3,7 @@
 import { useEffect } from 'react';
 import { useRouter } from 'next/navigation';
 import { useAuth } from '../lib/context/AuthContext';
+import { Loader } from './Loader';
 
 // Admin emails that are allowed to access admin routes
 const ADMIN_EMAILS = [
@@ -30,8 +31,11 @@ export function ProtectedRoute({ children, adminOnly = false }) {
 
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center pt-20 md:pt-24">
+        <div className="text-center">
+          <Loader size={48} />
+          <p className="mt-4 text-black text-lg">Loading...</p>
+        </div>
       </div>
     );
   }

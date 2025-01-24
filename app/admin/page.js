@@ -8,6 +8,7 @@ import { collection, query, getDocs, doc, updateDoc, deleteDoc, addDoc, serverTi
 import { db } from '../../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Loader2, UserX, RotateCcw, Plus, Trash2 } from 'lucide-react';
+import { Loader } from '../../components/Loader';
 
 export default function AdminPanel() {
   const [newQuestion, setNewQuestion] = useState({
@@ -284,8 +285,11 @@ export default function AdminPanel() {
   // Show loading state
   if (authLoading || dbLoading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white flex items-center justify-center">
-        <div className="text-xl">Loading...</div>
+      <div className="min-h-screen bg-white flex items-center justify-center pt-20 md:pt-24">
+        <div className="text-center">
+          <Loader size={48} />
+          <p className="mt-4 text-black text-lg">Loading...</p>
+        </div>
       </div>
     );
   }
@@ -329,11 +333,11 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-white">
-      <div className="container mx-auto px-4 py-24">
+    <div className="min-h-screen bg-white pt-20 md:pt-24">
+      <div className="container mx-auto px-4 py-8 md:py-12">
         <div className="max-w-6xl mx-auto">
           <motion.h1 
-            className="hero-text text-4xl md:text-5xl mb-12 text-center text-black"
+            className="hero-text text-4xl md:text-5xl mb-8 md:mb-12 text-center text-black"
             initial={{ opacity: 0, y: -20 }}
             animate={{ opacity: 1, y: 0 }}
           >
