@@ -3,36 +3,37 @@
 @tailwind utilities;
 
 /* Font imports */
-@import url('https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap');
-@import url('https://fonts.googleapis.com/css2?family=Bebas+Neue&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Bowlby+One+SC&family=Iceland&display=swap');
 
+/* Root variables */
 :root {
-  --font-primary: -apple-system, "San Francisco", "Helvetica Neue", Roboto, "Segoe UI", sans-serif;
-  --font-hero: 'Bebas Neue', sans-serif;
+  --font-primary: 'Iceland', serif;
+  --font-heading: 'Bowlby One SC', serif;
   --background: 0 0% 100%;
   --foreground: 240 10% 3.9%;
+  --bumble-yellow: #ffc629;
+  --bumble-yellow-light: #ffd666;
+  --bumble-black: #000000;
+  --bumble-white: #ffffff;
+  
+  /* Keep other variables but update colors */
   --card: 0 0% 100%;
   --card-foreground: 240 10% 3.9%;
   --popover: 0 0% 100%;
   --popover-foreground: 240 10% 3.9%;
-  --primary: 240 5.9% 10%;
-  --primary-foreground: 0 0% 98%;
-  --secondary: 240 4.8% 95.9%;
-  --secondary-foreground: 240 5.9% 10%;
+  --primary: 38 92% 50%;
+  --primary-foreground: 0 0% 100%;
+  --secondary: 38 92% 90%;
+  --secondary-foreground: 38 92% 30%;
   --muted: 240 4.8% 95.9%;
   --muted-foreground: 240 3.8% 46.1%;
-  --accent: 240 4.8% 95.9%;
-  --accent-foreground: 240 5.9% 10%;
+  --accent: 38 92% 95%;
+  --accent-foreground: 38 92% 30%;
   --destructive: 0 84.2% 60.2%;
   --destructive-foreground: 0 0% 98%;
-  --border: 240 5.9% 90%;
-  --input: 240 5.9% 90%;
-  --ring: 240 10% 3.9%;
-  --chart-1: 12 76% 61%;
-  --chart-2: 173 58% 39%;
-  --chart-3: 197 37% 24%;
-  --chart-4: 43 74% 66%;
-  --chart-5: 27 87% 67%;
+  --border: 38 92% 85%;
+  --input: 38 92% 85%;
+  --ring: 38 92% 50%;
   --radius: 0.5rem;
   --sidebar-background: 0 0% 98%;
   --sidebar-foreground: 240 5.3% 26.1%;
@@ -50,23 +51,39 @@ body {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
   text-rendering: optimizeLegibility;
+  background-color: var(--bumble-white);
+  color: var(--bumble-black);
 }
 
 /* Hero text style */
 .hero-text {
-  font-family: var(--font-hero);
-  line-height: 0.9;
-  font-weight: 900;
+  font-family: var(--font-heading);
+  line-height: 1;
+  letter-spacing: 0.02em;
 }
 
 /* Headings */
 h1, h2, h3, h4, h5, h6 {
-  letter-spacing: -0.02em;
+  font-family: var(--font-heading);
+  letter-spacing: 0.02em;
 }
 
-/* Enhance button text */
-button, .button, a {
+/* Regular text */
+p, span, div, button {
   font-family: var(--font-primary);
+}
+
+/* Custom button styles */
+.btn-primary {
+  background-color: var(--bumble-yellow);
+  color: var(--bumble-black);
+  font-family: var(--font-heading);
+  transition: all 0.3s ease;
+}
+
+.btn-primary:hover {
+  background-color: var(--bumble-yellow-light);
+  transform: translateY(-2px);
 }
 
 @layer base {

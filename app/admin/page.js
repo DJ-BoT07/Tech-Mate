@@ -6,6 +6,8 @@ import { useDatabase } from '../../lib/context/DatabaseContext';
 import { useRouter } from 'next/navigation';
 import { collection, query, getDocs, doc, updateDoc, deleteDoc, addDoc, serverTimestamp, getDoc, where } from 'firebase/firestore';
 import { db } from '../../lib/firebase';
+import { motion, AnimatePresence } from 'framer-motion';
+import { Search, Loader2, UserX, RotateCcw, Plus, Trash2 } from 'lucide-react';
 
 export default function AdminPanel() {
   const [newQuestion, setNewQuestion] = useState({
@@ -15,7 +17,7 @@ export default function AdminPanel() {
   });
   const [users, setUsers] = useState([]);
   const [error, setError] = useState('');
-  const [activeTab, setActiveTab] = useState('questions'); // 'questions' or 'users'
+  const [activeTab, setActiveTab] = useState('questions');
   const [selectedUsers, setSelectedUsers] = useState([]);
   const [searchQuery, setSearchQuery] = useState('');
   const { user, loading: authLoading } = useAuth();
@@ -327,159 +329,187 @@ export default function AdminPanel() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white">
-      <div className="container mx-auto px-4 py-8 md:py-16">
+    <div className="min-h-screen bg-white">
+      <div className="container mx-auto px-4 py-24">
         <div className="max-w-6xl mx-auto">
-          <h1 className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center">Admin Panel</h1>
+          <motion.h1 
+            className="hero-text text-4xl md:text-5xl mb-12 text-center text-black"
+            initial={{ opacity: 0, y: -20 }}
+            animate={{ opacity: 1, y: 0 }}
+          >
+            ADMIN DASHBOARD
+          </motion.h1>
 
           {error && (
-            <div className="bg-red-800 text-white p-3 md:p-4 rounded-lg mb-4 text-sm md:text-base">
+            <motion.div 
+              className="bg-red-50 text-red-600 p-4 rounded-2xl mb-8 text-center"
+              initial={{ opacity: 0, y: -20 }}
+              animate={{ opacity: 1, y: 0 }}
+            >
               {error}
-            </div>
+            </motion.div>
           )}
 
-          <div className="bg-gray-800 rounded-lg shadow-lg overflow-hidden">
+          <div className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100">
             {/* Tabs */}
-            <div className="flex border-b border-gray-700">
-              <button
+            <div className="flex border-b border-gray-100">
+              <motion.button
                 onClick={() => setActiveTab('questions')}
-                className={`flex-1 py-3 md:py-4 text-sm md:text-base font-medium transition-colors ${
+                className={`flex-1 py-4 text-lg font-medium transition-colors ${
                   activeTab === 'questions'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? 'bg-[#ffc629] text-black'
+                    : 'text-gray-500 hover:text-black hover:bg-gray-50'
                 }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Questions
-              </button>
-              <button
+              </motion.button>
+              <motion.button
                 onClick={() => setActiveTab('users')}
-                className={`flex-1 py-3 md:py-4 text-sm md:text-base font-medium transition-colors ${
+                className={`flex-1 py-4 text-lg font-medium transition-colors ${
                   activeTab === 'users'
-                    ? 'bg-blue-600 text-white'
-                    : 'text-gray-400 hover:text-white hover:bg-gray-700'
+                    ? 'bg-[#ffc629] text-black'
+                    : 'text-gray-500 hover:text-black hover:bg-gray-50'
                 }`}
+                whileHover={{ scale: 1.02 }}
+                whileTap={{ scale: 0.98 }}
               >
                 Users
-              </button>
+              </motion.button>
             </div>
 
-            <div className="p-4 md:p-6">
+            <div className="p-6 md:p-8">
               {activeTab === 'questions' ? (
-                <div className="space-y-4 md:space-y-6">
-                  <h2 className="text-xl md:text-2xl font-bold mb-4">Add New Question</h2>
+                <div className="space-y-8">
                   <div>
-                    <label className="block text-sm md:text-base font-medium mb-1.5">Question</label>
-                    <input
-                      type="text"
-                      value={newQuestion.question}
-                      onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
-                      className="w-full p-3 md:p-3.5 rounded bg-gray-700 border border-gray-600 text-sm md:text-base"
-                      placeholder="Enter the question"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm md:text-base font-medium mb-1.5">Answer</label>
-                    <input
-                      type="text"
-                      value={newQuestion.answer}
-                      onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
-                      className="w-full p-3 md:p-3.5 rounded bg-gray-700 border border-gray-600 text-sm md:text-base"
-                      placeholder="Enter the answer"
-                    />
-                  </div>
-                  <div>
-                    <label className="block text-sm md:text-base font-medium mb-1.5">Hints</label>
-                    {newQuestion.hints.map((hint, index) => (
-                      <input
-                        key={index}
-                        type="text"
-                        value={hint}
-                        onChange={(e) => {
-                          const newHints = [...newQuestion.hints];
-                          newHints[index] = e.target.value;
-                          setNewQuestion({ ...newQuestion, hints: newHints });
-                        }}
-                        className="w-full p-3 md:p-3.5 rounded bg-gray-700 border border-gray-600 mb-2 text-sm md:text-base"
-                        placeholder={`Hint ${index + 1}`}
-                      />
-                    ))}
-                  </div>
-                  <button
-                    onClick={handleSubmit}
-                    className="w-full md:w-auto px-6 py-3 md:py-3.5 bg-blue-600 hover:bg-blue-700 rounded font-semibold transition-colors text-sm md:text-base"
-                  >
-                    Add Question
-                  </button>
-
-                  <div className="mt-8">
-                    <h2 className="text-xl md:text-2xl font-bold mb-4">Existing Questions</h2>
+                    <h2 className="hero-text text-2xl mb-6 text-black">ADD NEW QUESTION</h2>
                     <div className="space-y-4">
-                      {questions?.map((q, index) => (
-                        <div key={q.id} className="bg-gray-700 p-3 md:p-4 rounded">
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700">Question</label>
+                        <input
+                          type="text"
+                          value={newQuestion.question}
+                          onChange={(e) => setNewQuestion({ ...newQuestion, question: e.target.value })}
+                          className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 text-base focus:ring-[#ffc629] focus:border-[#ffc629]"
+                          placeholder="Enter the question"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700">Answer</label>
+                        <input
+                          type="text"
+                          value={newQuestion.answer}
+                          onChange={(e) => setNewQuestion({ ...newQuestion, answer: e.target.value })}
+                          className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 text-base focus:ring-[#ffc629] focus:border-[#ffc629]"
+                          placeholder="Enter the answer"
+                        />
+                      </div>
+                      <div>
+                        <label className="block text-sm font-medium mb-2 text-gray-700">Hints</label>
+                        {newQuestion.hints.map((hint, index) => (
+                          <input
+                            key={index}
+                            type="text"
+                            value={hint}
+                            onChange={(e) => {
+                              const newHints = [...newQuestion.hints];
+                              newHints[index] = e.target.value;
+                              setNewQuestion({ ...newQuestion, hints: newHints });
+                            }}
+                            className="w-full p-4 rounded-xl bg-gray-50 border border-gray-200 text-base mb-3 focus:ring-[#ffc629] focus:border-[#ffc629]"
+                            placeholder={`Hint ${index + 1}`}
+                          />
+                        ))}
+                      </div>
+                      <motion.button
+                        onClick={handleSubmit}
+                        className="w-full py-4 bg-[#ffc629] text-black rounded-xl text-lg font-medium shadow-md flex items-center justify-center gap-2"
+                        whileHover={{ scale: 1.02, backgroundColor: '#ffd666' }}
+                        whileTap={{ scale: 0.98 }}
+                      >
+                        <Plus size={20} />
+                        Add Question
+                      </motion.button>
+                    </div>
+                  </div>
+
+                  <div>
+                    <h2 className="hero-text text-2xl mb-6 text-black">EXISTING QUESTIONS</h2>
+                    <div className="space-y-4">
+                      {questions?.map((q) => (
+                        <motion.div 
+                          key={q.id} 
+                          className="bg-gray-50 p-6 rounded-2xl"
+                          whileHover={{ scale: 1.01 }}
+                        >
                           <div className="flex justify-between items-start gap-4">
                             <div className="flex-1">
-                              <p className="text-sm md:text-base"><strong>Q:</strong> {q.question}</p>
-                              <p className="text-sm md:text-base mt-1"><strong>A:</strong> {q.answer}</p>
+                              <p className="text-base mb-2"><strong>Q:</strong> {q.question}</p>
+                              <p className="text-base mb-3"><strong>A:</strong> {q.answer}</p>
                               {q.hints && (
-                                <div className="mt-2">
-                                  <p className="text-xs md:text-sm text-gray-400">Hints:</p>
-                                  <ul className="list-disc list-inside">
+                                <div>
+                                  <p className="text-sm text-gray-500 mb-2">Hints:</p>
+                                  <ul className="list-disc list-inside space-y-1">
                                     {q.hints.map((hint, i) => (
-                                      <li key={i} className="text-xs md:text-sm text-gray-300">{hint}</li>
+                                      <li key={i} className="text-sm text-gray-600">{hint}</li>
                                     ))}
                                   </ul>
                                 </div>
                               )}
                             </div>
-                            <button
+                            <motion.button
                               onClick={() => handleDeleteQuestion(q.id)}
-                              className="text-red-400 hover:text-red-300 transition-colors text-sm md:text-base"
+                              className="text-red-500 hover:text-red-600 p-2"
+                              whileHover={{ scale: 1.1 }}
+                              whileTap={{ scale: 0.9 }}
                             >
-                              Delete
-                            </button>
+                              <Trash2 size={20} />
+                            </motion.button>
                           </div>
-                        </div>
+                        </motion.div>
                       ))}
                     </div>
                   </div>
                 </div>
               ) : (
                 <div>
-                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
-                    <h2 className="text-xl md:text-2xl font-bold">Users</h2>
+                  <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-8">
+                    <h2 className="hero-text text-2xl text-black">MANAGE USERS</h2>
                     <div className="w-full md:w-auto flex gap-4 items-center">
                       <div className="relative flex-1 md:min-w-[300px]">
                         <input
                           type="text"
                           value={searchQuery}
                           onChange={(e) => setSearchQuery(e.target.value)}
-                          placeholder="Search users by name, email, or status..."
-                          className="w-full p-2 md:p-3 pr-10 rounded bg-gray-700 border border-gray-600 text-sm md:text-base placeholder-gray-400 focus:ring-2 focus:ring-blue-500"
+                          placeholder="Search users..."
+                          className="w-full p-4 pr-12 rounded-xl bg-gray-50 border border-gray-200 text-base focus:ring-[#ffc629] focus:border-[#ffc629]"
                         />
-                        <span className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400">
-                          🔍
-                        </span>
+                        <Search className="absolute right-4 top-1/2 -translate-y-1/2 text-gray-400" size={20} />
                       </div>
                       {selectedUsers.length === 2 && (
-                        <button
+                        <motion.button
                           onClick={handleManualMatch}
-                          className="px-4 py-2 md:px-6 md:py-3 bg-green-600 hover:bg-green-700 rounded font-semibold transition-colors text-sm md:text-base whitespace-nowrap"
+                          className="px-6 py-4 bg-[#ffc629] text-black rounded-xl font-medium shadow-md whitespace-nowrap flex items-center gap-2"
+                          whileHover={{ scale: 1.02, backgroundColor: '#ffd666' }}
+                          whileTap={{ scale: 0.98 }}
                         >
-                          Match Selected Users
-                        </button>
+                          Match Selected
+                        </motion.button>
                       )}
                     </div>
                   </div>
+
                   <div className="space-y-4">
                     {filteredUsers.map((u) => (
-                      <div 
+                      <motion.div 
                         key={u.id} 
-                        className={`bg-gray-800 rounded-lg shadow p-4 md:p-6 ${
-                          selectedUsers.includes(u.id) ? 'border-2 border-blue-500' : 'border border-gray-700'
+                        className={`bg-white rounded-2xl shadow-md p-6 border ${
+                          selectedUsers.includes(u.id) ? 'border-[#ffc629]' : 'border-gray-100'
                         }`}
+                        whileHover={{ scale: 1.01 }}
                       >
-                        {/* Header with basic info and actions */}
-                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-4">
+                        <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 mb-6">
                           <div className="flex-1">
                             <div className="flex items-center gap-3">
                               <input
@@ -487,113 +517,130 @@ export default function AdminPanel() {
                                 checked={selectedUsers.includes(u.id)}
                                 onChange={() => handleUserSelect(u.id)}
                                 disabled={u.matched || (selectedUsers.length === 2 && !selectedUsers.includes(u.id))}
-                                className="w-4 h-4 rounded border-gray-300"
+                                className="w-5 h-5 rounded border-gray-300 text-[#ffc629] focus:ring-[#ffc629]"
                               />
                               <div>
-                                <p className="font-semibold text-base md:text-lg">{u.username || 'No username'}</p>
-                                <p className="text-gray-400 text-sm">{u.email}</p>
-                                <p className="text-xs text-gray-500">ID: {u.id}</p>
+                                <p className="hero-text text-xl text-black">{u.username || 'No username'}</p>
+                                <p className="text-gray-500 text-sm">{u.email}</p>
                               </div>
                             </div>
                           </div>
-                          <div className="flex gap-2 w-full md:w-auto">
-                            <button
+                          <div className="flex gap-3 w-full md:w-auto">
+                            <motion.button
                               onClick={() => handleResetMatch(u.id)}
                               disabled={!u.matched}
-                              className="flex-1 md:flex-none px-3 py-1.5 bg-yellow-600 hover:bg-yellow-700 rounded text-xs md:text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                              className="flex-1 md:flex-none px-4 py-2 bg-gray-100 hover:bg-gray-200 rounded-xl text-sm transition-colors disabled:opacity-50 disabled:cursor-not-allowed flex items-center gap-2"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
                             >
+                              <RotateCcw size={16} />
                               Reset Match
-                            </button>
-                            <button
+                            </motion.button>
+                            <motion.button
                               onClick={() => handleDeleteUser(u.id)}
-                              className="flex-1 md:flex-none px-3 py-1.5 bg-red-600 hover:bg-red-700 rounded text-xs md:text-sm transition-colors"
+                              className="flex-1 md:flex-none px-4 py-2 bg-red-100 hover:bg-red-200 text-red-600 rounded-xl text-sm transition-colors flex items-center gap-2"
+                              whileHover={{ scale: 1.02 }}
+                              whileTap={{ scale: 0.98 }}
                             >
+                              <UserX size={16} />
                               Delete User
-                            </button>
+                            </motion.button>
                           </div>
                         </div>
 
-                        {/* Detailed user information */}
-                        <div className="grid grid-cols-1 md:grid-cols-2 gap-4 md:gap-6 mt-4 pt-4 border-t border-gray-700">
-                          {/* Left column - Status and Timestamps */}
+                        <div className="grid grid-cols-1 md:grid-cols-2 gap-6 pt-4 border-t border-gray-100">
                           <div className="space-y-4">
                             <div>
-                              <h3 className="font-semibold mb-2 text-blue-400 text-sm md:text-base">Status Information</h3>
-                              <div className="space-y-2 text-sm">
-                                <p className="text-gray-400">Status: 
-                                  <span className={`ml-2 px-2 py-1 rounded text-xs md:text-sm ${
-                                    u.status === 'waiting' ? 'bg-yellow-600' :
-                                    u.status === 'matched' && !u.verified ? 'bg-blue-600' :
-                                    u.status === 'matched' && u.verified ? 'bg-green-600' :
-                                    'bg-gray-600'
+                              <h3 className="text-sm font-medium text-gray-500 mb-2">Status Information</h3>
+                              <div className="space-y-2">
+                                <div className="flex items-center gap-2">
+                                  <span className="text-sm text-gray-600">Status:</span>
+                                  <span className={`px-2 py-1 rounded-full text-xs ${
+                                    u.status === 'waiting' ? 'bg-yellow-100 text-yellow-700' :
+                                    u.status === 'matched' && !u.verified ? 'bg-blue-100 text-blue-700' :
+                                    u.status === 'matched' && u.verified ? 'bg-green-100 text-green-700' :
+                                    'bg-gray-100 text-gray-700'
                                   }`}>
                                     {u.status === 'waiting' ? 'Waiting' :
                                      u.status === 'matched' && !u.verified ? 'Matched (Unverified)' :
                                      u.status === 'matched' && u.verified ? 'Matched & Verified' :
                                      u.status}
                                   </span>
+                                </div>
+                                <p className="text-sm text-gray-600">
+                                  Matched: <span className="text-black">{u.matched ? 'Yes' : 'No'}</span>
                                 </p>
-                                <p className="text-gray-400">Matched: <span className="text-white">{u.matched ? 'Yes' : 'No'}</span></p>
-                                <p className="text-gray-400">Verified: <span className="text-white">{u.verified ? 'Yes' : 'No'}</span></p>
+                                <p className="text-sm text-gray-600">
+                                  Verified: <span className="text-black">{u.verified ? 'Yes' : 'No'}</span>
+                                </p>
                               </div>
                             </div>
 
                             <div>
-                              <h3 className="font-semibold mb-2 text-blue-400 text-sm md:text-base">Timestamps</h3>
-                              <div className="space-y-2 text-xs md:text-sm">
-                                <p className="text-gray-400">Registered: <span className="text-white">{u.registeredAt?.toDate().toLocaleString() || 'N/A'}</span></p>
-                                <p className="text-gray-400">Last Active: <span className="text-white">{u.lastActive?.toDate().toLocaleString() || 'N/A'}</span></p>
+                              <h3 className="text-sm font-medium text-gray-500 mb-2">Timestamps</h3>
+                              <div className="space-y-2 text-xs">
+                                <p className="text-gray-600">
+                                  Registered: <span className="text-black">{u.registeredAt?.toDate().toLocaleString() || 'N/A'}</span>
+                                </p>
+                                <p className="text-gray-600">
+                                  Last Active: <span className="text-black">{u.lastActive?.toDate().toLocaleString() || 'N/A'}</span>
+                                </p>
                                 {u.matchedAt && (
-                                  <p className="text-gray-400">Matched At: <span className="text-white">{u.matchedAt.toDate().toLocaleString()}</span></p>
+                                  <p className="text-gray-600">
+                                    Matched At: <span className="text-black">{u.matchedAt.toDate().toLocaleString()}</span>
+                                  </p>
                                 )}
                                 {u.verifiedAt && (
-                                  <p className="text-gray-400">Verified At: <span className="text-white">{u.verifiedAt.toDate().toLocaleString()}</span></p>
+                                  <p className="text-gray-600">
+                                    Verified At: <span className="text-black">{u.verifiedAt.toDate().toLocaleString()}</span>
+                                  </p>
                                 )}
                               </div>
                             </div>
                           </div>
 
-                          {/* Right column - Match Information */}
                           <div className="space-y-4">
                             <div>
-                              <h3 className="font-semibold mb-2 text-blue-400 text-sm md:text-base">Match Information</h3>
-                              <div className="space-y-2 text-sm">
-                                {u.matched ? (
-                                  <>
-                                    <p className="text-gray-400">Partner ID: <span className="text-white break-all">{u.partnerId}</span></p>
-                                    <div className="mt-2">
-                                      <p className="text-gray-400 font-semibold text-xs md:text-sm">Question/Answer Assignment:</p>
-                                      {u.questionPart ? (
-                                        <div className="bg-gray-700 p-2 md:p-3 rounded mt-1">
-                                          <p className="text-xs md:text-sm text-gray-400">Question Holder</p>
-                                          <p className="text-white text-sm md:text-base">{u.questionPart}</p>
-                                        </div>
-                                      ) : (
-                                        <div className="bg-gray-700 p-2 md:p-3 rounded mt-1">
-                                          <p className="text-xs md:text-sm text-gray-400">Answer Holder</p>
-                                          <p className="text-white text-sm md:text-base">{u.answerPart}</p>
-                                        </div>
-                                      )}
-                                    </div>
-                                    {u.hints && u.hints.length > 0 && (
-                                      <div className="mt-2">
-                                        <p className="text-gray-400 font-semibold text-xs md:text-sm">Hints:</p>
-                                        <ul className="list-disc list-inside">
-                                          {u.hints.map((hint, index) => (
-                                            <li key={index} className="text-white text-xs md:text-sm">{hint}</li>
-                                          ))}
-                                        </ul>
+                              <h3 className="text-sm font-medium text-gray-500 mb-2">Match Information</h3>
+                              {u.matched ? (
+                                <div className="space-y-3">
+                                  <p className="text-sm text-gray-600">
+                                    Partner ID: <span className="text-black break-all">{u.partnerId}</span>
+                                  </p>
+                                  <div>
+                                    <p className="text-sm font-medium text-gray-500 mb-2">Question/Answer Assignment:</p>
+                                    {u.questionPart ? (
+                                      <div className="bg-gray-50 p-3 rounded-xl">
+                                        <p className="text-xs text-gray-500 mb-1">Question Holder</p>
+                                        <p className="text-sm text-black">{u.questionPart}</p>
+                                      </div>
+                                    ) : (
+                                      <div className="bg-gray-50 p-3 rounded-xl">
+                                        <p className="text-xs text-gray-500 mb-1">Answer Holder</p>
+                                        <p className="text-sm text-black">{u.answerPart}</p>
                                       </div>
                                     )}
-                                  </>
-                                ) : (
-                                  <p className="text-gray-400">No match yet</p>
-                                )}
-                              </div>
+                                  </div>
+                                  {u.hints && u.hints.length > 0 && (
+                                    <div>
+                                      <p className="text-sm font-medium text-gray-500 mb-2">Hints:</p>
+                                      <ul className="space-y-1">
+                                        {u.hints.map((hint, index) => (
+                                          <li key={index} className="text-sm text-gray-600 bg-gray-50 p-2 rounded-lg">
+                                            {hint}
+                                          </li>
+                                        ))}
+                                      </ul>
+                                    </div>
+                                  )}
+                                </div>
+                              ) : (
+                                <p className="text-sm text-gray-500">No match yet</p>
+                              )}
                             </div>
                           </div>
                         </div>
-                      </div>
+                      </motion.div>
                     ))}
                   </div>
                 </div>

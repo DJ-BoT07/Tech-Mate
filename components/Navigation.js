@@ -4,6 +4,7 @@ import Link from 'next/link';
 import { useAuth } from '../lib/context/AuthContext';
 import { useState } from 'react';
 import { Menu, X, Code2 } from 'lucide-react';
+import { motion, AnimatePresence } from 'framer-motion';
 
 export function Navigation() {
   const { user, logout } = useAuth();
@@ -18,87 +19,156 @@ export function Navigation() {
     }
   };
 
+  const menuVariants = {
+    closed: {
+      opacity: 0,
+      y: -20,
+      transition: {
+        duration: 0.2
+      }
+    },
+    open: {
+      opacity: 1,
+      y: 0,
+      transition: {
+        duration: 0.3
+      }
+    }
+  };
+
   return (
-    <nav className="bg-gradient-to-r from-amber-500 to-yellow-400 text-white shadow-lg relative z-50">
-      <div className="container mx-auto">
-        <div className="flex justify-between items-center h-16 px-4">
+    <nav className="bg-white fixed w-full top-0 z-50">
+      <div className="container mx-auto px-4">
+        <div className="flex justify-between items-center h-20">
           <Link 
             href="/" 
-            className="flex items-center space-x-2 text-2xl font-semibold hover:opacity-90 transition-opacity"
+            className="flex items-center space-x-3"
           >
-            <Code2 size={24} className="text-white" />
-            <span>TechMate</span>
+            <div className="bg-[#ffc629] p-2 rounded-xl">
+              <Code2 size={28} className="text-black" />
+            </div>
+            <span className="hero-text text-2xl text-black">TECHMATE</span>
           </Link>
 
           {/* Mobile menu button */}
-          <button
+          <motion.button
             onClick={() => setIsMenuOpen(!isMenuOpen)}
-            className="md:hidden p-2 hover:bg-amber-400/20 rounded-full transition-colors"
+            className="md:hidden w-12 h-12 flex items-center justify-center rounded-full hover:bg-gray-100 transition-colors"
+            whileTap={{ scale: 0.95 }}
             aria-label="Toggle menu"
           >
-            {isMenuOpen ? <X size={24} /> : <Menu size={24} />}
-          </button>
+            <AnimatePresence mode="wait">
+              {isMenuOpen ? (
+                <motion.div
+                  key="close"
+                  initial={{ rotate: -90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: 90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <X size={24} className="text-black" />
+                </motion.div>
+              ) : (
+                <motion.div
+                  key="menu"
+                  initial={{ rotate: 90, opacity: 0 }}
+                  animate={{ rotate: 0, opacity: 1 }}
+                  exit={{ rotate: -90, opacity: 0 }}
+                  transition={{ duration: 0.2 }}
+                >
+                  <Menu size={24} className="text-black" />
+                </motion.div>
+              )}
+            </AnimatePresence>
+          </motion.button>
 
           {/* Desktop menu */}
-          <div className="hidden md:flex items-center space-x-1">
+          <div className="hidden md:flex items-center space-x-8">
             {user ? (
               <>
                 <Link 
                   href="/dashboard" 
-                  className="px-4 py-2 rounded-full hover:bg-amber-400/20 transition-colors font-medium text-lg"
+                  className="text-black hover:text-[#ffc629] transition-colors font-medium text-lg"
                 >
                   Dashboard
                 </Link>
-                <button
+                <motion.button
                   onClick={handleLogout}
-                  className="px-4 py-2 rounded-full bg-white/10 hover:bg-white/20 transition-colors font-medium text-lg"
+                  className="px-8 py-3 rounded-full bg-[#ffc629] text-black font-medium text-lg shadow-md"
+                  whileHover={{ 
+                    scale: 1.02,
+                    backgroundColor: '#ffd666'
+                  }}
+                  whileTap={{ scale: 0.98 }}
                 >
                   Logout
-                </button>
+                </motion.button>
               </>
             ) : (
-              <Link 
-                href="/auth" 
-                className="px-6 py-2 rounded-full bg-white text-amber-500 hover:bg-white/90 transition-colors font-semibold text-lg"
-              >
-                Get Started
+              <Link href="/auth">
+                <motion.button
+                  className="px-8 py-3 rounded-full bg-[#ffc629] text-black font-medium text-lg shadow-md"
+                  whileHover={{ 
+                    scale: 1.02,
+                    backgroundColor: '#ffd666'
+                  }}
+                  whileTap={{ scale: 0.98 }}
+                >
+                  Get Started
+                </motion.button>
               </Link>
             )}
           </div>
         </div>
 
         {/* Mobile menu */}
-        {isMenuOpen && (
-          <div className="md:hidden absolute left-0 right-0 top-full bg-gradient-to-r from-amber-500 to-yellow-400 border-t border-white/10 shadow-lg">
-            <div className="flex flex-col p-4 space-y-2">
-              {user ? (
-                <>
+        <AnimatePresence>
+          {isMenuOpen && (
+            <motion.div
+              className="md:hidden absolute left-0 right-0 top-full bg-white shadow-lg border-t border-gray-100"
+              initial="closed"
+              animate="open"
+              exit="closed"
+              variants={menuVariants}
+            >
+              <div className="p-6 space-y-6">
+                {user ? (
+                  <>
+                    <Link 
+                      href="/dashboard" 
+                      className="block text-center text-black hover:text-[#ffc629] transition-colors font-medium text-xl"
+                      onClick={() => setIsMenuOpen(false)}
+                    >
+                      Dashboard
+                    </Link>
+                    <motion.button
+                      onClick={handleLogout}
+                      className="w-full py-4 rounded-full bg-[#ffc629] text-black font-medium text-xl shadow-md"
+                      whileHover={{ backgroundColor: '#ffd666' }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Logout
+                    </motion.button>
+                  </>
+                ) : (
                   <Link 
-                    href="/dashboard" 
-                    className="px-4 py-3 rounded-full hover:bg-amber-400/20 transition-colors font-medium text-lg"
+                    href="/auth" 
+                    className="block"
                     onClick={() => setIsMenuOpen(false)}
                   >
-                    Dashboard
+                    <motion.button
+                      className="w-full py-4 rounded-full bg-[#ffc629] text-black font-medium text-xl shadow-md"
+                      whileHover={{ backgroundColor: '#ffd666' }}
+                      whileTap={{ scale: 0.98 }}
+                    >
+                      Get Started
+                    </motion.button>
                   </Link>
-                  <button
-                    onClick={handleLogout}
-                    className="px-4 py-3 rounded-full bg-white/10 hover:bg-white/20 transition-colors text-left font-medium text-lg"
-                  >
-                    Logout
-                  </button>
-                </>
-              ) : (
-                <Link 
-                  href="/auth" 
-                  className="px-4 py-3 rounded-full bg-white text-amber-500 hover:bg-white/90 transition-colors font-semibold text-lg text-center"
-                  onClick={() => setIsMenuOpen(false)}
-                >
-                  Get Started
-                </Link>
-              )}
-            </div>
-          </div>
-        )}
+                )}
+              </div>
+            </motion.div>
+          )}
+        </AnimatePresence>
       </div>
     </nav>
   );

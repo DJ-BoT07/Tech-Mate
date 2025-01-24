@@ -5,10 +5,9 @@ import { useDatabase } from '../../lib/context/DatabaseContext';
 import { useAuth } from '../../lib/context/AuthContext';
 import { ProtectedRoute } from '../../components/ProtectedRoute';
 import { motion, AnimatePresence } from 'framer-motion';
-import { fadeIn, slideIn, scaleIn, containerVariants } from '../../lib/animations';
-import { Card } from "@/components/ui/card";
+import { fadeIn, slideIn } from '../../lib/animations';
 import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
+import { Loader2 } from 'lucide-react';
 
 export default function Dashboard() {
   const [userStatus, setUserStatus] = useState(null);
@@ -43,7 +42,6 @@ export default function Dashboard() {
 
     try {
       await verifyMatch(user.uid, verificationCode);
-      // Reload user status
       const status = await getUserMatchStatus(user.uid);
       setUserStatus(status);
       setVerificationCode('');
@@ -56,37 +54,36 @@ export default function Dashboard() {
   return (
     <ProtectedRoute>
       <motion.div 
-        className="min-h-screen bg-gradient-to-b from-gray-900 to-gray-800 text-white"
+        className="min-h-screen bg-white"
         initial="initial"
         animate="animate"
         exit="exit"
-        variants={containerVariants}
       >
-        <div className="container mx-auto px-4 py-8 md:py-16">
+        <div className="container mx-auto px-4 py-24">
           <motion.div 
-            className="max-w-2xl mx-auto"
+            className="max-w-3xl mx-auto"
             variants={fadeIn}
           >
             <motion.h1 
-              className="text-3xl md:text-4xl font-bold mb-6 md:mb-8 text-center"
+              className="hero-text text-4xl md:text-5xl mb-12 text-center text-black"
               variants={slideIn}
             >
-              Your TechMate Status
+              YOUR TECHMATE STATUS
             </motion.h1>
             
             <AnimatePresence mode="wait">
               {loading ? (
                 <motion.div 
-                  className="text-center text-base md:text-lg"
+                  className="flex items-center justify-center py-12"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   exit={{ opacity: 0 }}
                 >
-                  Loading your match status...
+                  <Loader2 className="w-8 h-8 animate-spin text-[#ffc629]" />
                 </motion.div>
               ) : error ? (
                 <motion.div 
-                  className="bg-red-800 text-white p-3 md:p-4 rounded-lg text-center mb-4 text-sm md:text-base"
+                  className="bg-red-50 text-red-600 p-4 rounded-2xl text-center mb-8"
                   initial={{ opacity: 0, y: -20 }}
                   animate={{ opacity: 1, y: 0 }}
                   exit={{ opacity: 0, y: -20 }}
@@ -94,146 +91,120 @@ export default function Dashboard() {
                   {error}
                 </motion.div>
               ) : userStatus?.matched ? (
-                <Card className="bg-gray-800 border-gray-700">
-                  <motion.div 
-                    className="p-4 md:p-8"
-                    variants={scaleIn}
-                  >
-                    <div className="mb-6 md:mb-8">
-                      <motion.h2 
-                        className="text-xl md:text-2xl font-bold mb-4"
-                        variants={slideIn}
-                      >
-                        Your Match Details
-                      </motion.h2>
+                <motion.div 
+                  className="bg-white rounded-3xl shadow-xl overflow-hidden border border-gray-100"
+                  variants={fadeIn}
+                >
+                  <div className="p-8">
+                    <div className="mb-8">
                       <AnimatePresence mode="wait">
                         {userStatus.verified ? (
                           userStatus.partnerName && (
                             <motion.div 
-                              className="mb-4 bg-green-900 p-3 md:p-4 rounded text-center"
-                              initial={{ opacity: 0, scale: 0.8 }}
+                              className="bg-[#ffc629] p-6 rounded-2xl text-center mb-8"
+                              initial={{ opacity: 0, scale: 0.9 }}
                               animate={{ opacity: 1, scale: 1 }}
-                              exit={{ opacity: 0, scale: 0.8 }}
+                              exit={{ opacity: 0, scale: 0.9 }}
                             >
-                              <h3 className="text-base md:text-lg font-semibold mb-2">Matched with:</h3>
-                              <p className="text-lg md:text-xl">{userStatus.partnerName}</p>
+                              <h3 className="text-xl font-semibold mb-2 text-black">Matched with:</h3>
+                              <p className="text-2xl text-black hero-text">{userStatus.partnerName}</p>
                             </motion.div>
                           )
                         ) : (
                           <motion.div 
-                            className="mb-4 bg-blue-900 p-3 md:p-4 rounded text-center"
-                            initial={{ opacity: 0, scale: 0.8 }}
+                            className="bg-blue-50 p-6 rounded-2xl text-center mb-8"
+                            initial={{ opacity: 0, scale: 0.9 }}
                             animate={{ opacity: 1, scale: 1 }}
-                            exit={{ opacity: 0, scale: 0.8 }}
+                            exit={{ opacity: 0, scale: 0.9 }}
                           >
-                            <h3 className="text-base md:text-lg font-semibold mb-2">Match Found!</h3>
-                            <p className="text-sm md:text-base text-gray-300">Verify your match to see their username</p>
+                            <h3 className="text-xl font-semibold mb-2 text-blue-600">Match Found!</h3>
+                            <p className="text-blue-600">Verify your match to see their username</p>
                           </motion.div>
                         )}
                       </AnimatePresence>
-                      <motion.div className="space-y-4" variants={fadeIn}>
+
+                      <div className="space-y-6">
                         <div>
-                          <h3 className="text-base md:text-lg font-semibold mb-2">Your Part:</h3>
-                          <motion.p 
-                            className="bg-gray-700 p-3 md:p-4 rounded text-sm md:text-base"
+                          <h3 className="text-xl font-semibold mb-3 text-black">Your Part:</h3>
+                          <motion.div 
+                            className="bg-gray-50 p-6 rounded-2xl"
                             whileHover={{ scale: 1.01 }}
                           >
-                            {userStatus.questionPart ? `Question: ${userStatus.questionPart}` : `Answer: ${userStatus.answerPart}`}
-                          </motion.p>
+                            <p className="text-lg text-gray-700">
+                              {userStatus.questionPart ? `Question: ${userStatus.questionPart}` : `Answer: ${userStatus.answerPart}`}
+                            </p>
+                          </motion.div>
                         </div>
                         
                         <div>
-                          <h3 className="text-base md:text-lg font-semibold mb-2">Your Verification Code:</h3>
-                          <motion.p 
-                            className="bg-blue-700 p-3 md:p-4 rounded font-mono text-sm md:text-base break-all"
+                          <h3 className="text-xl font-semibold mb-3 text-black">Your Verification Code:</h3>
+                          <motion.div 
+                            className="bg-[#fff8e6] p-6 rounded-2xl"
                             whileHover={{ scale: 1.01 }}
                           >
-                            {userStatus.uid || user?.uid || 'Loading...'}
-                          </motion.p>
-                          <p className="text-xs md:text-sm text-gray-400 mt-2">Share this code with your match to verify</p>
+                            <p className="font-mono text-lg break-all text-[#ffc629]">
+                              {userStatus.uid || user?.uid || 'Loading...'}
+                            </p>
+                          </motion.div>
+                          <p className="text-sm text-gray-500 mt-2">Share this code with your match to verify</p>
                         </div>
 
                         {!userStatus.verified && (
                           <motion.form 
-                            onSubmit={handleVerification} 
-                            className="mt-4 md:mt-6"
-                            variants={fadeIn}
+                            onSubmit={handleVerification}
+                            className="mt-8"
                           >
-                            <h3 className="text-base md:text-lg font-semibold mb-2">Verify Match</h3>
-                            <div className="flex flex-col md:flex-row gap-2 md:gap-4">
+                            <h3 className="text-xl font-semibold mb-4 text-black">Verify Match</h3>
+                            <div className="space-y-4">
                               <Input
                                 type="text"
                                 value={verificationCode}
                                 onChange={(e) => setVerificationCode(e.target.value)}
                                 placeholder="Enter your partner's code"
-                                className="flex-1 bg-gray-700 border-gray-600 focus:ring-blue-500"
+                                className="w-full p-4 text-lg bg-gray-50 border-gray-200 rounded-xl focus:ring-[#ffc629] focus:border-[#ffc629]"
                               />
-                              <Button
+                              <motion.button
                                 type="submit"
-                                variant="default"
-                                className="px-6"
+                                className="w-full py-4 bg-[#ffc629] text-black rounded-xl text-lg font-semibold shadow-md"
+                                whileHover={{ scale: 1.02, backgroundColor: '#ffd666' }}
+                                whileTap={{ scale: 0.98 }}
                               >
-                                Verify
-                              </Button>
+                                Verify Match
+                              </motion.button>
                             </div>
                           </motion.form>
                         )}
                         
-                        <motion.div variants={fadeIn}>
-                          <h3 className="text-base md:text-lg font-semibold mb-2">Hints to Find Your Match:</h3>
-                          <motion.ul className="list-disc list-inside space-y-2">
+                        <div>
+                          <h3 className="text-xl font-semibold mb-4 text-black">Hints to Find Your Match:</h3>
+                          <div className="space-y-3">
                             {userStatus.hints?.map((hint, index) => (
-                              <motion.li
+                              <motion.div
                                 key={index}
-                                className="bg-gray-700 p-3 md:p-4 rounded text-sm md:text-base"
+                                className="bg-gray-50 p-4 rounded-xl"
                                 variants={fadeIn}
                                 custom={index}
                                 whileHover={{ scale: 1.01 }}
                               >
-                                {hint}
-                              </motion.li>
+                                <p className="text-gray-700">{hint}</p>
+                              </motion.div>
                             ))}
-                          </motion.ul>
-                        </motion.div>
-                      </motion.div>
+                          </div>
+                        </div>
+                      </div>
                     </div>
-
-                    <motion.div 
-                      className="border-t border-gray-600 pt-4 md:pt-6"
-                      variants={fadeIn}
-                    >
-                      <h3 className="text-base md:text-lg font-semibold mb-3 md:mb-4">What Next?</h3>
-                      <motion.ol className="list-decimal list-inside space-y-2 text-sm md:text-base">
-                        {[
-                          "Look for someone with the matching question/answer",
-                          "Use the hints above to identify your potential match",
-                          "When you find them, verify your match by comparing your question and answer",
-                          "Exchange verification codes and enter them here to confirm the match"
-                        ].map((step, index) => (
-                          <motion.li
-                            key={index}
-                            variants={fadeIn}
-                            custom={index}
-                            whileHover={{ x: 5 }}
-                          >
-                            {step}
-                          </motion.li>
-                        ))}
-                      </motion.ol>
-                    </motion.div>
 
                     {userStatus.verified && (
                       <motion.div 
-                        className="mt-6 md:mt-8 bg-green-800 p-4 md:p-6 rounded-lg text-center"
-                        initial={{ opacity: 0, scale: 0.8 }}
+                        className="mt-8 bg-[#ffc629] p-8 rounded-2xl text-center"
+                        initial={{ opacity: 0, scale: 0.9 }}
                         animate={{ opacity: 1, scale: 1 }}
                         transition={{ delay: 0.2 }}
                       >
                         <motion.h3 
-                          className="text-xl md:text-2xl font-bold mb-2"
+                          className="text-3xl font-bold mb-3 text-black hero-text"
                           animate={{ 
                             scale: [1, 1.1, 1],
-                            rotate: [0, 5, -5, 0]
                           }}
                           transition={{ 
                             duration: 1,
@@ -241,39 +212,45 @@ export default function Dashboard() {
                             repeatDelay: 2
                           }}
                         >
-                          🎉 Match Verified!
+                          🎉 MATCH VERIFIED!
                         </motion.h3>
-                        <p className="text-sm md:text-base">Congratulations! You've found and verified your TechMate!</p>
+                        <p className="text-lg text-black">Congratulations! You've found and verified your TechMate!</p>
                       </motion.div>
                     )}
-                  </motion.div>
-                </Card>
+                  </div>
+                </motion.div>
               ) : (
-                <Card className="bg-gray-800 border-gray-700">
+                <motion.div 
+                  className="bg-white rounded-3xl shadow-xl p-8 text-center border border-gray-100"
+                  variants={fadeIn}
+                >
                   <motion.div 
-                    className="p-4 md:p-8 text-center"
-                    variants={scaleIn}
+                    className="w-20 h-20 mx-auto mb-6 bg-[#ffc629] rounded-full flex items-center justify-center"
+                    animate={{ 
+                      scale: [1, 1.1, 1],
+                      rotate: [0, 360]
+                    }}
+                    transition={{ 
+                      duration: 4,
+                      repeat: Infinity,
+                      ease: "linear"
+                    }}
                   >
-                    <motion.h2 
-                      className="text-xl md:text-2xl font-bold mb-3 md:mb-4"
-                      variants={slideIn}
-                    >
-                      Waiting for Match
-                    </motion.h2>
-                    <motion.p 
-                      className="mb-3 md:mb-4 text-sm md:text-base"
-                      variants={fadeIn}
-                    >
-                      We're currently looking for your perfect technical match. This might take a few minutes to a few hours depending on registrations.
-                    </motion.p>
-                    <motion.p 
-                      className="text-xs md:text-sm text-gray-400"
-                      variants={fadeIn}
-                    >
-                      You'll be notified when we find your match!
-                    </motion.p>
+                    <Loader2 className="w-10 h-10 text-black animate-spin" />
                   </motion.div>
-                </Card>
+                  <motion.h2 
+                    className="text-2xl font-bold mb-4 text-black hero-text"
+                    variants={slideIn}
+                  >
+                    FINDING YOUR MATCH
+                  </motion.h2>
+                  <motion.p 
+                    className="text-gray-600 text-lg"
+                    variants={fadeIn}
+                  >
+                    We're currently looking for your perfect technical match. This might take a few minutes.
+                  </motion.p>
+                </motion.div>
               )}
             </AnimatePresence>
           </motion.div>
