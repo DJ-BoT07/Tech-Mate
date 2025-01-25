@@ -608,9 +608,28 @@ export default function AdminPanel() {
                               <h3 className="text-sm font-medium text-gray-500 mb-2">Match Information</h3>
                               {u.matched ? (
                                 <div className="space-y-3">
-                                  <p className="text-sm text-gray-600">
-                                    Partner ID: <span className="text-black break-all">{u.partnerId}</span>
-                                  </p>
+                                  <div className="bg-gray-50 p-3 rounded-xl space-y-2">
+                                    <div>
+                                      <p className="text-xs text-gray-500">User ID</p>
+                                      <p className="text-sm text-black break-all font-mono">{u.id}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500">Partner ID</p>
+                                      <p className="text-sm text-black break-all font-mono">{u.partnerId}</p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500">Partner Username</p>
+                                      <p className="text-sm text-black">
+                                        {users.find(user => user.id === u.partnerId)?.username || 'Not found'}
+                                      </p>
+                                    </div>
+                                    <div>
+                                      <p className="text-xs text-gray-500">Partner Email</p>
+                                      <p className="text-sm text-black">
+                                        {users.find(user => user.id === u.partnerId)?.email || 'Not found'}
+                                      </p>
+                                    </div>
+                                  </div>
                                   <div>
                                     <p className="text-sm font-medium text-gray-500 mb-2">Question/Answer Assignment:</p>
                                     {u.questionPart ? (
@@ -639,7 +658,13 @@ export default function AdminPanel() {
                                   )}
                                 </div>
                               ) : (
-                                <p className="text-sm text-gray-500">No match yet</p>
+                                <div className="space-y-3">
+                                  <div className="bg-gray-50 p-3 rounded-xl">
+                                    <p className="text-xs text-gray-500">User ID</p>
+                                    <p className="text-sm text-black break-all font-mono">{u.id}</p>
+                                  </div>
+                                  <p className="text-sm text-gray-500">No match yet</p>
+                                </div>
                               )}
                             </div>
                           </div>
