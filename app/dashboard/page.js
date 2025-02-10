@@ -119,6 +119,14 @@ export default function Dashboard() {
                           >
                             <h3 className="text-xl font-semibold mb-2 text-blue-600">Match Found!</h3>
                             <p className="text-blue-600">Verify your match to see their username</p>
+                            {userStatus.meetingLocation && (
+                              <div className="mt-4 p-4 bg-white rounded-xl">
+                                <p className="text-sm text-gray-600 mb-1">Meeting Location:</p>
+                                <p className="text-lg font-medium text-blue-600">{userStatus.meetingLocation.name}</p>
+                                <p className="text-xs text-gray-500 mt-1">Location ID: {userStatus.meetingLocation.id}</p>
+                                <p className="text-sm text-blue-600 mt-2">👋 Meet your TechMate here!</p>
+                              </div>
+                            )}
                           </motion.div>
                         )}
                       </AnimatePresence>
@@ -215,6 +223,13 @@ export default function Dashboard() {
                           🎉 MATCH VERIFIED!
                         </motion.h3>
                         <p className="text-lg text-black">Congratulations! You've found and verified your TechMate!</p>
+                        {userStatus.meetingLocation && (
+                          <div className="mt-4 p-4 bg-white rounded-xl">
+                            <p className="text-sm text-gray-600 mb-1">Meeting Location:</p>
+                            <p className="text-xl font-medium text-black">{userStatus.meetingLocation.name}</p>
+                            <p className="text-sm text-gray-600 mt-2">👋 Head over to meet your TechMate!</p>
+                          </div>
+                        )}
                       </motion.div>
                     )}
                   </div>

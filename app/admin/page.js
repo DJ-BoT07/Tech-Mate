@@ -9,6 +9,7 @@ import { db } from '../../lib/firebase';
 import { motion, AnimatePresence } from 'framer-motion';
 import { Search, Loader2, UserX, RotateCcw, Plus, Trash2 } from 'lucide-react';
 import { Loader } from '../../components/Loader';
+import { getRandomLocation } from '../../lib/data/location';
 
 export default function AdminPanel() {
   const [newQuestion, setNewQuestion] = useState({
@@ -114,7 +115,8 @@ export default function AdminPanel() {
             status: 'waiting',
             verified: false,
             verifiedAt: null,
-            hints: []
+            hints: [],
+            meetingLocation: null
           });
 
           // Find and update match record
@@ -140,7 +142,8 @@ export default function AdminPanel() {
           status: 'waiting',
           verified: false,
           verifiedAt: null,
-          hints: []
+          hints: [],
+          meetingLocation: null
         });
 
         // Refresh users list
@@ -181,6 +184,10 @@ export default function AdminPanel() {
         const matchTimestamp = serverTimestamp();
         const [user1Id, user2Id] = selectedUsers;
 
+        // Get random meeting location
+        const meetingLocation = getRandomLocation();
+        console.log('Selected meeting location:', meetingLocation);
+
         // Randomly decide who gets question and who gets answer
         const isFirstUserQuestionHolder = Math.random() < 0.5;
 
@@ -193,7 +200,8 @@ export default function AdminPanel() {
           matched: true,
           status: 'matched',
           matchedAt: matchTimestamp,
-          verified: false
+          verified: false,
+          meetingLocation: meetingLocation
         };
 
         // Update second user
@@ -205,7 +213,8 @@ export default function AdminPanel() {
           matched: true,
           status: 'matched',
           matchedAt: matchTimestamp,
-          verified: false
+          verified: false,
+          meetingLocation: meetingLocation
         };
 
         // Perform updates
@@ -219,7 +228,8 @@ export default function AdminPanel() {
           questionId: questionData.id,
           createdAt: matchTimestamp,
           status: 'active',
-          completed: false
+          completed: false,
+          meetingLocation: meetingLocation
         });
 
         // Reset selection and refresh users list
@@ -629,6 +639,15 @@ export default function AdminPanel() {
                                         {users.find(user => user.id === u.partnerId)?.email || 'Not found'}
                                       </p>
                                     </div>
+                                    {u.meetingLocation && (
+                                      <div>
+                                        <p className="text-xs text-gray-500">Meeting Location</p>
+                                        <p className="text-sm text-black font-medium">
+                                          {u.meetingLocation.name} (ID: {u.meetingLocation.id})
+                                        </p>
+                                        <p className="text-xs text-gray-400 mt-1">Meet your partner here!</p>
+                                      </div>
+                                    )}
                                   </div>
                                   <div>
                                     <p className="text-sm font-medium text-gray-500 mb-2">Question/Answer Assignment:</p>
