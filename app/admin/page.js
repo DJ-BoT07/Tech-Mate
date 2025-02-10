@@ -96,16 +96,12 @@ export default function AdminPanel() {
   const handleResetMatch = async (userId) => {
     if (window.confirm('Are you sure you want to reset this user\'s match?')) {
       try {
-        // Get the user's data first to find their partner
-        const userDoc = await doc(db, 'users', userId);
-        const userSnapshot = await getDoc(userDoc);
-        const userData = userSnapshot.data();
+        const userDoc = await getDoc(doc(db, 'users', userId));
+        const userData = userDoc.data();
 
-        // If user has a partner, reset partner's data too
         if (userData.partnerId) {
           const partnerId = userData.partnerId;
           
-          // Reset partner
           await updateDoc(doc(db, 'users', partnerId), {
             partnerId: null,
             questionPart: null,
@@ -116,10 +112,10 @@ export default function AdminPanel() {
             verified: false,
             verifiedAt: null,
             hints: [],
-            meetingLocation: null
+            meetingLocation: null,
+            matchDelayStart: null
           });
 
-          // Find and update match record
           const matchQuery = query(
             collection(db, 'matches'),
             where('user1Id', 'in', [userId, partnerId]),
@@ -127,12 +123,10 @@ export default function AdminPanel() {
           );
           const matchSnapshot = await getDocs(matchQuery);
           if (!matchSnapshot.empty) {
-            const matchDoc = matchSnapshot.docs[0];
-            await deleteDoc(doc(db, 'matches', matchDoc.id));
+            await deleteDoc(doc(db, 'matches', matchSnapshot.docs[0].id));
           }
         }
 
-        // Reset original user
         await updateDoc(doc(db, 'users', userId), {
           partnerId: null,
           questionPart: null,
@@ -143,10 +137,10 @@ export default function AdminPanel() {
           verified: false,
           verifiedAt: null,
           hints: [],
-          meetingLocation: null
+          meetingLocation: null,
+          matchDelayStart: null
         });
 
-        // Refresh users list
         await refreshUsersList();
         setError('');
       } catch (error) {
